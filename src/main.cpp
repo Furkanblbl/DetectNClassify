@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include "opencv2/opencv.hpp"
 #include "opencv2/highgui/highgui.hpp"
-
 #include <fstream>
 
 using namespace std;
@@ -12,7 +11,6 @@ int main() {
 
     cv::Mat image; //create a matrix to store the image
     image = cv::imread("../nuts.jpg"); //read the image file
-    cv::resize(image, image, cv::Size(640,640), cv::INTER_LINEAR); //resize the image
 
     int *image_data = (int*) malloc(image.rows * image.cols * 3 * sizeof(int)); //create a new image data for color image
 
@@ -20,37 +18,37 @@ int main() {
     for(int i = 0; i < image.rows; i++) {
         for(int j = 0; j < image.cols; j++) {
             cv::Vec3b pixel = image.at<cv::Vec3b>(i,j);
-            image_data[i*image.cols*3 + j + 0] = (int)pixel[0]; //r
-            image_data[i*image.cols*3 + j + 1] = (int)pixel[1]; //g
-            image_data[i*image.cols*3 + j + 2] = (int)pixel[2]; //b
+            int indeks = (i * 640 + j) * 3;
+            image_data[indeks + 0] = (int)pixel[0]; //r
+            image_data[indeks + 1] = (int)pixel[1]; //g
+            image_data[indeks + 2] = (int)pixel[2]; //b
 
         }
     }
 
+    int *gray = (int*)malloc(640 * 640 * 1 * sizeof(int));
+    int count = 0;
 
-    int *gray_image_data = (int*) malloc(image.rows * image.cols * 1 * sizeof(int)); //create a new image data for gray image
-    
-    //convert the color image to gray image
-    int idx = 0;
-    for(int i = 0; i < image.rows; i++) {
-        for(int j = 0; j < image.cols; j++) {
-            int toplam = (image_data[i * image.cols * 3 + 0] * 0.299) + (image_data[i * image.cols * 3 + 1] * 0.587) + image_data[i * image.cols * 3 + 2] * 0.144;
-            gray_image_data[idx] = toplam;
-            idx++;
+    for(int i = 0; i < 640 ; i++) {
+        for(int j = 0; j < 640 ; j++) {
+            int idx = (i * 640 + j) * 3; 
+            float red   = image_data[idx + 0] * 0.299;
+            float green = image_data[idx + 1] * 0.587;
+            float blue  = image_data[idx + 2] * 0.114;
+            float _sum = red + green + blue;
+            gray[count] = (int)_sum;
+            ++count;
         }
     }
 
-    cv::Mat gray_image(cv::Size(image.rows, image.cols), CV_8UC1); //create a new matrix for gray image
+    cv::Mat gray_image(cv::Size(640, 640), CV_8UC1);
 
-    for(int i = 0; i < image.rows; i++) {
-        for(int j = 0; j < image.cols; j++) {
-        uchar blue = image.at<cv::Vec3b>(i, j)[0];
-        uchar green = image.at<cv::Vec3b>(i, j)[1];
-        uchar red = image.at<cv::Vec3b>(i, j)[2];
-        gray_image.at<uchar>(i, j) = static_cast<uchar>(0.299 * red + 0.587 * green + 0.114 * blue);
+    for(int i = 0; i < 640; i++) {
+        for(int j = 0; j < 640; j++) {
+            int indeks = ((i * 640) + j) * 1;
+            gray_image.at<uchar>(i, j) = static_cast<uchar>(gray[indeks]);
         }
     }
-
 
     cv::imshow("gray", gray_image);
     cv::imshow("Lena", image);
