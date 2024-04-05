@@ -7,6 +7,7 @@
 
 #include "histogram.h"
 #include "kmean.h"
+#include "segment.h"
 
 using namespace std;
 
@@ -70,8 +71,20 @@ int main() {
         }
     }
 
+    Segment seg;
+    int *segment = seg.segmentation(zeroone);
+
+    cv::Mat segmented(cv::Size(640, 640), CV_8UC1);
+
+    for(int i = 0; i < 640; i++) {
+        for(int j = 0; j < 640; j++) {
+            int indeks = ((i * 640) + j) * 1;
+            segmented.at<uchar>(i, j) = static_cast<uchar>(segment[indeks]);
+        }
+    }
     cv::imshow("gray", gray_image);
-    cv::imshow("Lena", image);
+    cv::imshow("segment", segmented);
+    cv::imshow("image", image);
     cv::imshow("zero_image", zero_image);
     cv::waitKey(0);
 
