@@ -74,6 +74,8 @@ int main() {
     Segment seg;
     int *segment = seg.segmentation(zeroone);
 
+    int *cimg = seg.draw_segments(segment, image_data);
+
     cv::Mat segmented(cv::Size(640, 640), CV_8UC1);
 
     for(int i = 0; i < 640; i++) {
@@ -82,10 +84,25 @@ int main() {
             segmented.at<uchar>(i, j) = static_cast<uchar>(segment[indeks]);
         }
     }
+
+    cv::Mat colored(cv::Size(640, 640), CV_8UC3);
+
+    for(int i = 0; i < 640; i++) {
+        for(int j = 0; j < 640; j++) {
+            int indeks = ((i * 640) + j) * 3;
+            cv::Vec3b pixel;
+            pixel[0] = (int)cimg[indeks + 0];
+            pixel[1] = (int)cimg[indeks + 1];
+            pixel[2] = (int)cimg[indeks + 2];
+
+            colored.at<cv::Vec3b>(i, j) = pixel;
+        }
+    }
     cv::imshow("gray", gray_image);
     cv::imshow("segment", segmented);
     cv::imshow("image", image);
     cv::imshow("zero_image", zero_image);
+    cv::imshow("colored", colored);
     cv::waitKey(0);
 
     return 0;
