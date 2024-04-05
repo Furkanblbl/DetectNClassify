@@ -3,7 +3,7 @@ project( 402524_furkan_bulbul_image_processing )
 
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
+include_directories( ali_veli )
 
-
-add_executable( 402524_furkan_bulbul_image_processing main.cpp )
+add_executable( 402524_furkan_bulbul_image_processing src/main.cpp )
 target_link_libraries( 402524_furkan_bulbul_image_processing ${OpenCV_LIBS} )
