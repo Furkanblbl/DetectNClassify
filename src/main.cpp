@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include "histogram.h"
+#include "kmean.h"
 
 using namespace std;
 
@@ -56,8 +57,22 @@ int main() {
     int *histogram = hist.calculate_histogram(gray, gray_image.rows, gray_image.cols);
     hist.print_histogram();
 
+    Kmean km;
+    float *kmeans = km.calculate_kmean(histogram, 52.0, 149.0);
+    int *zeroone = km.convert_binary(gray, (int)kmeans[0], (int)kmeans[1]);
+
+    cv::Mat zero_image(cv::Size(640, 640), CV_8UC1);
+
+    for(int i = 0; i < 640; i++) {
+        for(int j = 0; j < 640; j++) {
+            int indeks = ((i * 640) + j) * 1;
+            zero_image.at<uchar>(i, j) = static_cast<uchar>(zeroone[indeks]);
+        }
+    }
+
     cv::imshow("gray", gray_image);
     cv::imshow("Lena", image);
+    cv::imshow("zero_image", zero_image);
     cv::waitKey(0);
 
     return 0;
