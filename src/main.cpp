@@ -5,6 +5,8 @@
 #include "opencv2/highgui/highgui.hpp"
 #include <fstream>
 
+#include "histogram.h"
+
 using namespace std;
 
 int main() {
@@ -49,6 +51,10 @@ int main() {
             gray_image.at<uchar>(i, j) = static_cast<uchar>(gray[indeks]);
         }
     }
+
+    Histogram hist;
+    int *histogram = hist.calculate_histogram(gray, gray_image.rows, gray_image.cols);
+    hist.print_histogram();
 
     cv::imshow("gray", gray_image);
     cv::imshow("Lena", image);
