@@ -14,8 +14,8 @@ using namespace std;
 int main() {
 
     cv::Mat image; //create a matrix to store the image
-    image = cv::imread("../nuts.jpg"); //read the image file
-
+    image = cv::imread("../new.jpeg"); //read the image file
+    cv::resize(image, image, cv::Size(640, 640)); //resize the image to 640x640
     int *image_data = (int*) malloc(image.rows * image.cols * 3 * sizeof(int)); //create a new image data for color image
 
     //get the pixel values of the image in one dimensional array
@@ -75,6 +75,7 @@ int main() {
     int *segment = seg.segmentation(zeroone);
 
     int *cimg = seg.draw_segments(segment, image_data);
+    int *segmente = seg.count_objects(segment);
 
     cv::Mat segmented(cv::Size(640, 640), CV_8UC1);
 
