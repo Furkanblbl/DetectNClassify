@@ -74,8 +74,39 @@ int main() {
     Segment seg;
     int *segment = seg.segmentation(zeroone);
 
-    int *cimg = seg.draw_segments(segment, image_data);
-    int *segmente = seg.count_objects(segment);
+    seg.draw_segments(segment, image_data);
+    
+    vector<int*> *segmente = seg.count_objects(segment);
+
+    int adet = seg.get_kac_tane_bolge_var();
+
+    int *group_image = seg.group_by_object(segmente, adet, image_data);
+
+
+    cv::Mat group_color(cv::Size(640, 640), CV_8UC3);
+
+    for(int i = 0; i < 640; i++) {
+        for(int j = 0; j < 640; j++) {
+            int indeks = ((i * 640) + j) * 3;
+            cv::Vec3b pixel;
+            pixel[0] = (int)group_image[indeks + 0];
+            pixel[1] = (int)group_image[indeks + 1];
+            pixel[2] = (int)group_image[indeks + 2];
+
+            group_color.at<cv::Vec3b>(i, j) = pixel;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     cv::Mat segmented(cv::Size(640, 640), CV_8UC1);
 
@@ -86,24 +117,15 @@ int main() {
         }
     }
 
-    cv::Mat colored(cv::Size(640, 640), CV_8UC3);
 
-    for(int i = 0; i < 640; i++) {
-        for(int j = 0; j < 640; j++) {
-            int indeks = ((i * 640) + j) * 3;
-            cv::Vec3b pixel;
-            pixel[0] = (int)cimg[indeks + 0];
-            pixel[1] = (int)cimg[indeks + 1];
-            pixel[2] = (int)cimg[indeks + 2];
-
-            colored.at<cv::Vec3b>(i, j) = pixel;
-        }
-    }
     cv::imshow("gray", gray_image);
     cv::imshow("segment", segmented);
     cv::imshow("image", image);
     cv::imshow("zero_image", zero_image);
-    cv::imshow("colored", colored);
+    cv::imshow("gi", group_color);
+
+    free(segment);
+
     cv::waitKey(0);
 
     return 0;

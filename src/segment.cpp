@@ -1,11 +1,13 @@
 #include "segment.h"
 #include <fstream>
-#include <vector>
 #include <bits/stdc++.h>
+#include <random>
 
 using namespace std;
 
 Segment::Segment(){
+    kac_tane_bolge_var = 0;
+    bolgeler = (int*)malloc(256 * sizeof(int));
 
 };
 
@@ -74,7 +76,7 @@ int *Segment::segmentation(int *img){
     return img;
 };
 
-int *Segment::draw_segments(int *img, int *cimg)
+void Segment::draw_segments(int *img, int *cimg)
 {
     int bolgeler[256] = {0};
     for (int i = 0; i < 256; i++)
@@ -99,34 +101,32 @@ int *Segment::draw_segments(int *img, int *cimg)
     }
 
 
-    for (int i = 0; i < 256; i++)
-    {
-        if (bolgeler[i] != 0 && i != 0)
-        {
-            for(int j = 0; j < 640; j++)
-            {
-                for(int k = 0; k < 640; k++)
-                {
-                    int indeks_1_d = j * 640 + k;
-                    int indeks_3_d = ((j * 640) + k) * 3;
+    // for (int i = 0; i < 256; i++)
+    // {
+    //     if (bolgeler[i] != 0 && i != 0)
+    //     {
+    //         for(int j = 0; j < 640; j++)
+    //         {
+    //             for(int k = 0; k < 640; k++)
+    //             {
+    //                 int indeks_1_d = j * 640 + k;
+    //                 int indeks_3_d = ((j * 640) + k) * 3;
 
-                    if (img[indeks_1_d] == i)
-                    {
-                        cimg[indeks_3_d + 0] = 255;
-                        cimg[indeks_3_d + 1] = 0;
-                        cimg[indeks_3_d + 2] = 255;
-                    }
-                }
-            }
-        }
-    }
-    return cimg;
+    //                 if (img[indeks_1_d] == i)
+    //                 {
+    //                     cimg[indeks_3_d + 0] = 255;
+    //                     cimg[indeks_3_d + 1] = 0;
+    //                     cimg[indeks_3_d + 2] = 255;
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+    // return cimg;
 
 }
 
-int *Segment::count_objects(int *img){
-
-    int bolgeler[256] = {0};
+vector<int*> *Segment::count_objects(int *img){
     for (int i = 0; i < 256; i++)
     {
         bolgeler[i] = 0;
@@ -141,13 +141,14 @@ int *Segment::count_objects(int *img){
     }
 
     cout << "kac_tane_bolge_var : " << kac_tane_bolge_var << endl;
-    vector<int*> obje(kac_tane_bolge_var);
+    vector<int*> *obje = new vector<int*>(kac_tane_bolge_var);
+    int sirasi = 0;
     for (int i = 0; i < 256; i++)
     {
         if (bolgeler[i] != 0 && bolgeler[i] > 100 && i != 0)
         {
             cout << i << ". bolgedeki beyaz nokta adeti: " << bolgeler[i] << endl;
-            obje[i] = new int[2*bolgeler[i]];
+            (*obje)[sirasi] = new int[2*bolgeler[i]];
             int count = 0;
             for(int j = 0; j < 640; j++)
             {
@@ -155,11 +156,64 @@ int *Segment::count_objects(int *img){
                 {
                    if (img[j * 640 + k] == i)
                    {
-                        obje[i][count] = j * 640 + k;
+                        (*obje)[sirasi][count] = j * 640 + k;
                         count += 1;
                    }
                 }
             }
+            ++sirasi;
         }
     }
+    return obje;
+}
+
+int Segment::get_kac_tane_bolge_var()
+{
+    return kac_tane_bolge_var;
+}
+
+int *Segment::group_by_object(vector<int*> *data, int count, int *cimg)
+{  
+
+    int data_count[count] = {0};
+    
+    for (int i = 0; i < count; i++)
+    {
+        data_count[i] = 0;
+    }
+    
+    
+    int indeks = 0;
+    for (int i = 0; i < 256; i++)
+    {
+        if (bolgeler[i] != 0 && bolgeler[i] > 100 && i != 0)
+        {
+            data_count[indeks]  = bolgeler[i];
+            ++indeks;
+        }
+    }
+
+    random_device rd;
+    mt19937 gen(rd());
+
+    for (int i = 0; i < count; i++)
+    {
+        uniform_int_distribution<> dis1(0, 255);
+        uniform_int_distribution<> dis2(0, 255);
+        uniform_int_distribution<> dis3(0, 255);
+        int r = dis1(gen);
+        int g = dis2(gen);
+        int b = dis3(gen);
+
+        for (int j = 0; j < data_count[i]; j++)
+        {
+            int idx = (*data)[i][j]*3;
+            cimg[idx + 0] = r;
+            cimg[idx + 1] = g;
+            cimg[idx + 2] = b;
+        }
+        
+    }
+
+    return cimg;
 }
