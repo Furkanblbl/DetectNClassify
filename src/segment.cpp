@@ -100,30 +100,6 @@ void Segment::draw_segments(int *img, int *cimg)
         }
     }
 
-
-    // for (int i = 0; i < 256; i++)
-    // {
-    //     if (bolgeler[i] != 0 && i != 0)
-    //     {
-    //         for(int j = 0; j < 640; j++)
-    //         {
-    //             for(int k = 0; k < 640; k++)
-    //             {
-    //                 int indeks_1_d = j * 640 + k;
-    //                 int indeks_3_d = ((j * 640) + k) * 3;
-
-    //                 if (img[indeks_1_d] == i)
-    //                 {
-    //                     cimg[indeks_3_d + 0] = 255;
-    //                     cimg[indeks_3_d + 1] = 0;
-    //                     cimg[indeks_3_d + 2] = 255;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-    // return cimg;
-
 }
 
 vector<int*> *Segment::count_objects(int *img){
@@ -148,7 +124,7 @@ vector<int*> *Segment::count_objects(int *img){
         if (bolgeler[i] != 0 && bolgeler[i] > 100 && i != 0)
         {
             cout << i << ". bolgedeki beyaz nokta adeti: " << bolgeler[i] << endl;
-            (*obje)[sirasi] = new int[2*bolgeler[i]];
+            (*obje)[sirasi] = new int[bolgeler[i]];
             int count = 0;
             for(int j = 0; j < 640; j++)
             {
@@ -213,6 +189,37 @@ int *Segment::group_by_object(vector<int*> *data, int count, int *cimg)
             cimg[idx + 2] = b;
         }
         
+    }
+
+    int moments[count][3];
+    for (int i = 0; i < count; i++)
+    {
+        moments[i][0] = 0;
+        moments[i][1] = 0;
+        moments[i][2] = 0;
+    }
+
+    for(int i = 0; i < count; i++)
+    {
+        for (int j = 0; j < data_count[i]; j++)
+        {
+            int idx = (*data)[i][j];
+            moments[i][0] += int(idx / 640);  // Satir sayilarinin toplamını verir. Yani m10 degerini elde ederiz.
+            moments[i][1] += (idx % 640) - 1; // 640 mod 640 = 0 sütun verir. Sutünların toplamı m01 i verir.
+            moments[i][2] += 1; // Nesnenin piksel sayısını verir. Yani m00 i verir.
+        }    
+    }
+
+    for(int i = 0; i < count; i++)
+    {   
+        int indeks = 0 ;
+        cout << i + 1 << ". obje : " ;
+        for (int j = 0; j < 3; j++)
+        {
+            cout << moments[i][j] << " ";
+        }
+        cout << "  m01/m00 : " << moments[i][1] / moments[i][2] << " m10/m00 : " << moments[i][0] / moments[i][2] << " m10/m01 " <<moments[i][0] / moments[i][1] << " m01/m10 " <<moments[i][1] / moments[i][0]<< endl;
+        cout << endl;
     }
 
     return cimg;
