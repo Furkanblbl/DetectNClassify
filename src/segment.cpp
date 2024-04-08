@@ -2,6 +2,7 @@
 #include <fstream>
 #include <bits/stdc++.h>
 #include <random>
+#include <opencv2/opencv.hpp>
 
 using namespace std;
 
@@ -172,24 +173,23 @@ int *Segment::group_by_object(vector<int*> *data, int count, int *cimg)
     random_device rd;
     mt19937 gen(rd());
 
-    for (int i = 0; i < count; i++)
-    {
-        uniform_int_distribution<> dis1(0, 255);
-        uniform_int_distribution<> dis2(0, 255);
-        uniform_int_distribution<> dis3(0, 255);
-        int r = dis1(gen);
-        int g = dis2(gen);
-        int b = dis3(gen);
+    // for (int i = 0; i < count; i++)
+    // {
+    //     uniform_int_distribution<> dis1(0, 255);
+    //     uniform_int_distribution<> dis2(0, 255);
+    //     uniform_int_distribution<> dis3(0, 255);
+    //     int r = dis1(gen);
+    //     int g = dis2(gen);
+    //     int b = dis3(gen);
 
-        for (int j = 0; j < data_count[i]; j++)
-        {
-            int idx = (*data)[i][j]*3;
-            cimg[idx + 0] = r;
-            cimg[idx + 1] = g;
-            cimg[idx + 2] = b;
-        }
-        
-    }
+    //     for (int j = 0; j < data_count[i]; j++)
+    //     {
+    //         int idx = (*data)[i][j]*3;
+    //         cimg[idx + 0] = r;
+    //         cimg[idx + 1] = g;
+    //         cimg[idx + 2] = b;
+    //     }
+    // }
 
     int moments[count][3];
     for (int i = 0; i < count; i++)
@@ -207,7 +207,7 @@ int *Segment::group_by_object(vector<int*> *data, int count, int *cimg)
             moments[i][0] += int(idx / 640);  // Satir sayilarinin toplamını verir. Yani m10 degerini elde ederiz.
             moments[i][1] += (idx % 640) - 1; // 640 mod 640 = 0 sütun verir. Sutünların toplamı m01 i verir.
             moments[i][2] += 1; // Nesnenin piksel sayısını verir. Yani m00 i verir.
-        }    
+        }
     }
 
     for(int i = 0; i < count; i++)
@@ -221,6 +221,33 @@ int *Segment::group_by_object(vector<int*> *data, int count, int *cimg)
         cout << "  m01/m00 : " << moments[i][1] / moments[i][2] << " m10/m00 : " << moments[i][0] / moments[i][2] << " m10/m01 " <<moments[i][0] / moments[i][1] << " m01/m10 " <<moments[i][1] / moments[i][0]<< endl;
         cout << endl;
     }
+
+    cv::Mat img(cv::Size(640, 640), CV_8UC3);
+    for(int i = 0; i < 640; i++) {
+        for(int j = 0; j < 640; j++) {
+            int indeks = ((i * 640) + j) * 3;
+            cv::Vec3b pixel;
+            pixel[0] = (int)cimg[indeks + 0];
+            pixel[1] = (int)cimg[indeks + 1];
+            pixel[2] = (int)cimg[indeks + 2];
+            img.at<cv::Vec3b>(i, j) = pixel;
+        }
+    }
+
+    for(int i = 0; i < count; i++)
+    {   
+        int m00 = moments[i][2];
+        if (100 < m00 &&  m00 < 200)
+            cv::putText(img, "mercimek", cv::Point(moments[i][1]/moments[i][2], moments[i][0]/moments[i][2]), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 255), 1, cv::LINE_AA);
+        if (300 < m00  && m00 < 600)
+            cv::putText(img, "misir", cv::Point(moments[i][1]/moments[i][2], moments[i][0]/moments[i][2]), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 255), 1, cv::LINE_AA);      
+        if (m00 > 1000 ) 
+            cv::putText(img, "cekirdek ya da findik", cv::Point(moments[i][1]/moments[i][2], moments[i][0]/moments[i][2]), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 255), 1, cv::LINE_AA);        
+
+    }
+
+    cv::imshow("img", img);
+    cv::waitKey(0);
 
     return cimg;
 }
