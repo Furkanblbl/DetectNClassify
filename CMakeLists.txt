@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 project( 402524_furkan_bulbul_image_processing )
 
 find_package( OpenCV REQUIRED )
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -g")
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 include_directories( include )
 

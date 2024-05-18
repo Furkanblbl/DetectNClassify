@@ -14,7 +14,7 @@ using namespace std;
 int main() {
 
     cv::Mat image; //create a matrix to store the image
-    image = cv::imread("../new.jpeg"); //read the image file
+    image = cv::imread("../NUT.jpg"); //read theimage file
     cv::resize(image, image, cv::Size(640, 640)); //resize the image to 640x640
     int *image_data = (int*) malloc(image.rows * image.cols * 3 * sizeof(int)); //create a new image data for color image
 
@@ -56,7 +56,7 @@ int main() {
 
     Histogram hist;
     int *histogram = hist.calculate_histogram(gray, gray_image.rows, gray_image.cols);
-    hist.print_histogram();
+    // hist.print_histogram();
 
     Kmean km;
     float *kmeans = km.calculate_kmean(histogram, 52.0, 149.0);
@@ -98,16 +98,6 @@ int main() {
     }
 
 
-
-
-
-
-
-
-
-
-
-
     cv::Mat segmented(cv::Size(640, 640), CV_8UC1);
 
     for(int i = 0; i < 640; i++) {
@@ -118,15 +108,23 @@ int main() {
     }
 
 
-    cv::imshow("gray", gray_image);
-    cv::imshow("segment", segmented);
     cv::imshow("image", image);
+    cv::waitKey(0);
+
+    cv::imshow("gray", gray_image);
+    cv::waitKey(0);
+
     cv::imshow("zero_image", zero_image);
-    cv::imshow("gi", group_color);
+    cv::waitKey(0);
+
+    cv::imshow("segment", segmented);
+    cv::waitKey(0);
+
+    cv::imshow("group_color", group_color);
+    cv::waitKey(0);
 
     free(segment);
 
-    cv::waitKey(0);
 
     return 0;
 }

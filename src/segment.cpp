@@ -17,7 +17,7 @@ Segment::~Segment(){
 };
 
 int *Segment::segmentation(int *img){
-    int idx = 69;
+    int idx = 0;
 
     for(int i = 2; i < 640 - 2; i++)
     {
@@ -44,19 +44,19 @@ int *Segment::segmentation(int *img){
                 {
                     int _min_val = 1000;
 
-                    if (temp[0] != 0 && temp[0] < _min_val)
+                    if (temp[0] != 0 && temp[0] < _min_val) //left cross index has a different value
                     {
                         _min_val = temp[0];
                     }
-                    if (temp[1] != 0 && temp[1] < _min_val)
+                    if (temp[1] != 0 && temp[1] < _min_val) //up index has a different value
                     {
                         _min_val = temp[1];
                     }
-                    if (temp[2] != 0 && temp[2] < _min_val)
+                    if (temp[2] != 0 && temp[2] < _min_val) //right cross index has  a different value
                     {
                         _min_val = temp[2];
                     }
-                    if (temp[3] != 0 && temp[3] < _min_val)
+                    if (temp[3] != 0 && temp[3] < _min_val) //prev index has a different value
                     {
                         _min_val = temp[3];
                     }
@@ -220,6 +220,7 @@ int *Segment::group_by_object(vector<int*> *data, int count, int *cimg)
         }
         cout << "  m01/m00 : " << moments[i][1] / moments[i][2] << " m10/m00 : " << moments[i][0] / moments[i][2] << " m10/m01 " <<moments[i][0] / moments[i][1] << " m01/m10 " <<moments[i][1] / moments[i][0]<< endl;
         cout << endl;
+        cout << "m00 " << moments[i][2] << endl;
     }
 
     cv::Mat img(cv::Size(640, 640), CV_8UC3);
@@ -237,12 +238,16 @@ int *Segment::group_by_object(vector<int*> *data, int count, int *cimg)
     for(int i = 0; i < count; i++)
     {   
         int m00 = moments[i][2];
-        if (100 < m00 &&  m00 < 200)
-            cv::putText(img, "mercimek", cv::Point(moments[i][1]/moments[i][2], moments[i][0]/moments[i][2]), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 255), 1, cv::LINE_AA);
-        if (300 < m00  && m00 < 600)
-            cv::putText(img, "misir", cv::Point(moments[i][1]/moments[i][2], moments[i][0]/moments[i][2]), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 255), 1, cv::LINE_AA);      
-        if (m00 > 1000 ) 
-            cv::putText(img, "cekirdek ya da findik", cv::Point(moments[i][1]/moments[i][2], moments[i][0]/moments[i][2]), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 255), 1, cv::LINE_AA);        
+        if (400 < m00 &&  m00 < 640)
+            cv::putText(img, "Misir", cv::Point(moments[i][1]/moments[i][2], moments[i][0]/moments[i][2]), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 255), 1, cv::LINE_AA);
+        if (640 < m00  && m00 < 1100)
+            cv::putText(img, "Fasulye", cv::Point(moments[i][1]/moments[i][2], moments[i][0]/moments[i][2]), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 255), 1, cv::LINE_AA);      
+        if (1400 < m00 && m00 < 2000) 
+            cv::putText(img, "Findik", cv::Point(moments[i][1]/moments[i][2], moments[i][0]/moments[i][2]), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 255), 1, cv::LINE_AA);        
+        if (2000 < m00 && m00 < 3400) 
+            cv::putText(img, "Badem", cv::Point(moments[i][1]/moments[i][2], moments[i][0]/moments[i][2]), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 255), 1, cv::LINE_AA);        
+        if (5000 < m00 && m00 < 6500) 
+            cv::putText(img, "Ceviz", cv::Point(moments[i][1]/moments[i][2], moments[i][0]/moments[i][2]), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 255), 1, cv::LINE_AA);        
 
     }
 
