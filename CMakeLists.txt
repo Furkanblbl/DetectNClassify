@@ -1,11 +1,36 @@
-cmake_minimum_required(VERSION 2.8)
-project( 402524_furkan_bulbul_image_processing )
+cmake_minimum_required(VERSION 3.10)
 
-find_package( OpenCV REQUIRED )
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -g")
-include_directories( ${OpenCV_INCLUDE_DIRS} )
-include_directories( include )
+project(DetectNClassify
+        VERSION 1.0
+        DESCRIPTION "Classical Image Segmentation and Object Detection in C++"
+        LANGUAGES CXX)
 
-add_executable( 402524_furkan_bulbul_image_processing src/main.cpp src/histogram.cpp  src/kmean.cpp src/segment.cpp)
+# Use modern C++
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-target_link_libraries( 402524_furkan_bulbul_image_processing ${OpenCV_LIBS} )
+# Enable debug flags (optional)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+
+# Find OpenCV
+find_package(OpenCV REQUIRED)
+
+# Include directories
+include_directories(
+    ${OpenCV_INCLUDE_DIRS}
+    include
+)
+
+# Source files
+set(SOURCES
+    src/main.cpp
+    src/histogram.cpp
+    src/kmean.cpp
+    src/segment.cpp
+)
+
+# Create executable
+add_executable(DetectNClassify ${SOURCES})
+
+# Link OpenCV
+target_link_libraries(DetectNClassify ${OpenCV_LIBS})
