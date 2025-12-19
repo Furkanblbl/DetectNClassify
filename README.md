@@ -31,20 +31,6 @@ All core algorithms are implemented **from scratch**, while **OpenCV** is used o
 
 ---
 
-## 📂 Project Structure
-
-DetectNClassify
-├── include
-│ ├── histogram.h
-│ ├── kmean.h
-│ └── segment.h
-├── src
-│ ├── main.cpp
-│ ├── histogram.cpp
-│ ├── kmean.cpp
-│ └── segment.cpp
-└── CMakeLists.txt
-
 ## ⚙️ Processing Pipeline
 
 ### 1️⃣ Image Loading
